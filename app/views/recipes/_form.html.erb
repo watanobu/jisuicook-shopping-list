@@ -1,0 +1,65 @@
+<%= form_with(model: @recipe, class: "space-y-6", html: { multipart: true }) do |f| %>
+  <% if @recipe.errors.any? %>
+    <div class="bg-red-50 border border-red-200 text-red-800 rounded p-4">
+      <p class="font-semibold">入力エラーがあります。</p>
+      <ul class="list-disc list-inside text-sm mt-2">
+        <% @recipe.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="upload-area cursor-pointer" onclick="document.getElementById('recipe_photo_input').click();">
+    <% if @recipe.photo.attached? %>
+      <%= image_tag @recipe.photo, class: "w-32 h-32 object-cover rounded-xl shadow mb-3" %>
+      <p class="upload-text text-slate-600">別の写真に差し替える</p>
+    <% else %>
+      <div class="upload-icon">🖼️</div>
+      <p class="upload-text">クリックして写真をアップロード</p>
+    <% end %>
+    <%= f.file_field :photo, id: "recipe_photo_input", class: "hidden", accept: "image/*" %>
+  </div>
+
+  <div class="space-y-1 px-6">
+    <%= f.label :name, "レシピ名", class: "input-label" %>
+    <%= f.text_field :name, placeholder: "例: 豚肉の生姜焼き", class: "input-underline text-2xl font-bold text-slate-900 placeholder:text-slate-300" %>
+  </div>
+
+  <div class="space-y-1 px-6">
+    <%= f.label :image_url, "写真URL（任意）", class: "input-label" %>
+    <%= f.text_field :image_url, placeholder: "カードに表示される写真URL", class: "input-underline text-sm placeholder:text-slate-300" %>
+  </div>
+
+  <div class="divider"></div>
+
+  <div data-controller="ingredient-form" class="space-y-3 px-4">
+    <div class="flex items-center justify-between">
+      <h3 class="section-heading">材料（1人分）</h3>
+      <button type="button" data-action="ingredient-form#addRow" class="text-sm font-semibold text-[var(--brand)]">＋ 行を追加</button>
+    </div>
+
+    <div data-ingredient-form-target="container" class="ingredients-box">
+      <%= f.fields_for :ingredients do |ingredient_fields| %>
+        <%= render "ingredient_fields", f: ingredient_fields %>
+      <% end %>
+    </div>
+
+    <template data-ingredient-form-target="template">
+      <%= f.fields_for :ingredients, @recipe.ingredients.build, child_index: "NEW_RECORD" do |ingredient_fields| %>
+        <%= render "ingredient_fields", f: ingredient_fields %>
+      <% end %>
+    </template>
+
+    <datalist id="unit-options">
+      <% Ingredient::UNITS.each do |unit| %>
+        <option value="<%= unit %>"></option>
+      <% end %>
+    </datalist>
+  </div>
+
+  <div class="flex flex-col md:flex-row items-center gap-3 pt-6 border-t border-slate-100">
+    <%= link_to "キャンセル", recipes_path, class: "w-full md:w-1/2 btn-secondary" %>
+    <%= f.submit "レシピを保存", class: "w-full md:w-1/2 btn-primary" %>
+  </div>
+<% end %>

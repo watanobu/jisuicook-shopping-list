@@ -1,0 +1,18 @@
+# OS / editor
+.DS_Store
+
+# Bundler / Ruby
+/vendor/bundle
+
+# Logs / temp / storage
+/log/*
+/tmp/*
+/storage/*
+
+# Keep placeholder files
+!/log/.keep
+!/tmp/.keep
+!/tmp/pids/.keep
+!/tmp/cache/.keep
+!/tmp/storage/.keep
+!/storage/.keep

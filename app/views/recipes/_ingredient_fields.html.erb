@@ -1,0 +1,18 @@
+<div class="ingredient-row">
+  <div class="col-span-6">
+    <%= f.label :name, "材料名", class: "input-label text-xs" %>
+    <%= f.text_field :name, class: "input-underline text-sm" %>
+  </div>
+  <div class="col-span-2">
+    <%= f.label :quantity, "数量", class: "input-label text-xs" %>
+    <%= f.number_field :quantity, step: "0.1", min: "0.01", class: "input-underline text-sm text-center font-semibold" %>
+  </div>
+  <div class="col-span-2">
+    <%= f.label :unit, "単位", class: "input-label text-xs" %>
+    <%= f.text_field :unit, list: "unit-options", class: "input-underline text-sm" %>
+  </div>
+  <div class="col-span-2 flex items-center space-x-2 justify-end">
+    <%= f.check_box :condiment, class: "h-4 w-4 text-[var(--brand)] border-slate-300 rounded" %>
+    <%= f.label :condiment, "調味料", class: "text-xs text-slate-700" %>
+  </div>
+</div>

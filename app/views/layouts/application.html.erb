@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JisuicookShoppingList</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-[var(--surface-2)] min-h-screen">
+    <header class="brand-bar">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-2xl">🛍️</div>
+        <div class="flex flex-col leading-tight">
+          <span class="text-lg font-semibold">Chef's Note</span>
+          <span class="text-xs opacity-90">献立と買い物をスマートに</span>
+        </div>
+      </div>
+      <button class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-white text-lg" aria-label="search">
+        🔍
+      </button>
+    </header>
+
+    <div class="max-w-5xl mx-auto px-4 pb-24 pt-5">
+      <% flash.each do |key, value| %>
+        <div class="mb-4 px-4 py-3 rounded-xl border shadow-sm <%= key.to_s == 'notice' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-yellow-50 border-yellow-200 text-yellow-800' %>">
+          <%= value %>
+        </div>
+      <% end %>
+
+      <main>
+        <%= yield %>
+      </main>
+    </div>
+
+    <% current_tab = if controller_name.in?(%w[recipes ingredients])
+        :recipes
+      else
+        :plans
+      end %>
+
+    <nav class="bottom-nav">
+      <%= link_to recipes_path, class: "bottom-nav__item #{current_tab == :recipes ? 'bottom-nav__item--active' : ''}" do %>
+        <span class="text-xl"><%= current_tab == :recipes ? "🧾" : "🧾" %></span>
+        <span class="mt-1">レシピ</span>
+      <% end %>
+      <%= link_to plans_path, class: "bottom-nav__item #{current_tab == :plans ? 'bottom-nav__item--active' : ''}" do %>
+        <span class="text-xl"><%= current_tab == :plans ? "📅" : "📅" %></span>
+        <span class="mt-1">献立・買物</span>
+      <% end %>
+    </nav>
+  </body>
+</html>

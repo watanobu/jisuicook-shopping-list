@@ -1,0 +1,123 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-xl font-bold text-slate-900">献立カレンダー</h1>
+      <p class="text-sm text-[var(--muted)] mt-1">今日から1週間分を管理。人数を変えると買い物リストが自動で更新されます。</p>
+    </div>
+    <%= link_to "レシピ一覧", recipes_path, class: "text-sm font-semibold text-[var(--brand)] underline" %>
+  </div>
+
+  <% days = (@start_date..@end_date).to_a %>
+  <div class="flex gap-3 overflow-x-auto pb-2">
+    <% days.each_with_index do |date, idx| %>
+      <% is_today = date == Date.current %>
+      <div class="pill-day <%= 'pill-day--today' if is_today %>">
+        <span class="text-[11px] <%= is_today ? 'text-white/80' : 'text-slate-500' %>"><%= is_today ? '今日' : l(date, format: :short) %></span>
+        <span class="<%= is_today ? 'text-white text-lg' : 'text-slate-800 text-lg' %>"><%= date.day %></span>
+        <span class="text-[11px] <%= is_today ? 'text-white/80' : 'text-slate-400' %>"><%= weekday_label(date) %></span>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="grid lg:grid-cols-2 gap-5">
+    <div class="space-y-4">
+      <% days.each do |date| %>
+        <div class="soft-card p-4 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-slate-500"><%= l date, format: :long %>（<%= weekday_label(date) %>）</p>
+              <p class="text-xs text-slate-400">朝・昼・晩に複数レシピを追加できます</p>
+            </div>
+          </div>
+
+          <% MealPlan.meal_types.keys.each do |meal_type| %>
+            <% slot_plans = @plans_by_slot[[date, meal_type]] || [] %>
+            <% chip_class = case meal_type
+              when "morning" then "chip-gray"
+              when "lunch" then "chip-orange"
+              else "chip-purple"
+            end %>
+            <% icon = { "morning" => "🌅", "lunch" => "🍲", "dinner" => "🌙" }[meal_type] %>
+            <div class="space-y-2">
+              <div class="meal-slot">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg"><%= icon %></div>
+                  <div>
+                    <p class="font-semibold text-slate-800"><%= meal_type_label(meal_type) %></p>
+                    <p class="text-xs text-[var(--muted)]"><%= slot_plans.any? ? "#{slot_plans.size}件追加済み" : "未追加" %></p>
+                  </div>
+                </div>
+                <span class="meal-chip <%= chip_class %>"><%= meal_type.upcase %></span>
+              </div>
+
+              <% slot_plans.each do |plan| %>
+                <div class="flex items-center justify-between bg-slate-50 border border-slate-100 rounded-xl px-3 py-2">
+                  <div>
+                    <p class="font-semibold text-slate-800"><%= plan.recipe.name %></p>
+                    <p class="text-xs text-[var(--muted)]">人数: <%= plan.servings %> 人</p>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <%= form_with(model: plan, url: meal_plan_path(plan), method: :patch, class: "flex items-center space-x-1") do |f| %>
+                      <%= f.number_field :servings, step: "0.5", min: "0.5", class: "w-16 text-sm rounded-lg border-slate-200 focus:ring-[var(--brand)] focus:border-[var(--brand)]" %>
+                      <%= f.submit "更新", class: "px-3 py-1 bg-[var(--brand)] text-white rounded-lg text-xs font-semibold hover:bg-[var(--brand-dark)]" %>
+                    <% end %>
+                    <%= button_to "削除", meal_plan_path(plan), method: :delete, data: { confirm: "この枠から削除しますか？" }, class: "text-xs text-red-500 font-semibold" %>
+                  </div>
+                </div>
+              <% end %>
+
+              <div class="border border-dashed border-slate-200 rounded-xl px-3 py-2 bg-white">
+                <%= form_with(model: MealPlan.new, url: meal_plans_path, class: "grid grid-cols-12 gap-2 items-end") do |f| %>
+                  <%= f.hidden_field :plan_date, value: date %>
+                  <%= f.hidden_field :meal_type, value: meal_type %>
+                  <div class="col-span-7">
+                    <%= f.label :recipe_id, "レシピを追加", class: "text-[11px] text-[var(--muted)]" %>
+                    <%= f.select :recipe_id, options_from_collection_for_select(@recipes, :id, :name), { prompt: "選択してください" }, class: "mt-1 block w-full rounded-lg border-slate-200 bg-white text-sm focus:ring-[var(--brand)] focus:border-[var(--brand)]" %>
+                  </div>
+                  <div class="col-span-3">
+                    <%= f.label :servings, "人数", class: "text-[11px] text-[var(--muted)]" %>
+                    <%= f.number_field :servings, step: "0.5", min: "0.5", value: 1, class: "mt-1 block w-full rounded-lg border-slate-200 text-sm focus:ring-[var(--brand)] focus:border-[var(--brand)]" %>
+                  </div>
+                  <div class="col-span-2">
+                    <%= f.submit "追加", class: "w-full px-3 py-2 bg-[var(--brand)] text-white rounded-lg text-sm font-semibold hover:bg-[var(--brand-dark)]" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="soft-card p-5 h-fit">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <p class="text-sm font-semibold text-slate-800">買い物リスト</p>
+          <p class="text-xs text-[var(--muted)]">今表示している1週間の献立から自動計算</p>
+        </div>
+      </div>
+
+      <% if @shopping_list.any? %>
+        <div class="space-y-3">
+          <% @shopping_list.each do |item| %>
+            <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 border border-slate-100">
+              <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-lg bg-white shadow-inner flex items-center justify-center text-lg">🧺</div>
+                <div>
+                  <p class="font-semibold text-slate-800"><%= item.name %></p>
+                  <p class="text-xs text-[var(--muted)]">単位: <%= item.unit %></p>
+                </div>
+              </div>
+              <p class="text-base font-semibold text-slate-900"><%= number_with_precision(item.quantity, precision: 2) %></p>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-12 text-[var(--muted)] bg-slate-50 border border-slate-100 rounded-xl">
+          <div class="text-3xl mb-2">🛒</div>
+          <p class="text-sm">献立を追加するとリストがここに表示されます</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
