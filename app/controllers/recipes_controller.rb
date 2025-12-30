@@ -2,7 +2,15 @@ class RecipesController < ApplicationController
   before_action :set_recipe, only: %i[show edit update destroy]
 
   def index
-    @recipes = Recipe.includes(:ingredients).order(:name)
+    @query = params[:q].to_s.strip
+    @recipes = Recipe.includes(:ingredients)
+    if @query.present?
+      like = "%#{@query}%"
+      @recipes = @recipes.left_outer_joins(:ingredients)
+                         .where("recipes.name LIKE :q OR ingredients.name LIKE :q", q: like)
+                         .distinct
+    end
+    @recipes = @recipes.order(:name)
   end
 
   def show; end

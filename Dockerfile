@@ -17,9 +17,9 @@ ENV RAILS_ENV="development" \
 # Throw-away build stage to reduce size of final image
 FROM base as build
 
-# Install packages needed to build gems
+# Install packages needed to build gems and image processing
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git pkg-config libyaml-dev
+    apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git pkg-config libyaml-dev imagemagick
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -42,7 +42,7 @@ FROM base
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl default-mysql-client && \
+    apt-get install --no-install-recommends -y curl default-mysql-client imagemagick && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application
