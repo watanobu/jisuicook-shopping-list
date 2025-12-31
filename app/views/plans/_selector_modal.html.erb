@@ -1,0 +1,67 @@
+<div class="selector-backdrop hidden" data-meal-selector-target="backdrop">
+  <div class="selector-panel">
+    <div class="selector-header">
+      <div class="flex items-center gap-2">
+        <span class="text-base font-bold text-slate-900">献立に追加</span>
+      </div>
+      <button type="button" class="selector-close" data-action="click->meal-selector#close">×</button>
+    </div>
+
+    <div class="selector-servings">
+      <div class="font-semibold text-orange-700 text-sm">何人分作りますか？</div>
+      <div class="selector-counter">
+        <button type="button" class="counter-btn" data-action="click->meal-selector#decrement">−</button>
+        <span class="counter-value" data-meal-selector-target="servingsDisplay">1</span>
+        <button type="button" class="counter-btn" data-action="click->meal-selector#increment">＋</button>
+      </div>
+    </div>
+
+    <div class="selector-search">
+      <span class="selector-search__icon">🔍</span>
+      <input
+        type="text"
+        placeholder="レシピ名で検索..."
+        class="selector-search__input"
+        data-meal-selector-target="search"
+        data-action="input->meal-selector#filter">
+    </div>
+
+    <div class="selector-list" data-meal-selector-target="list">
+      <% recipes.each do |recipe| %>
+        <div
+          class="selector-item"
+          data-meal-selector-target="listItem"
+          data-name="<%= recipe.name.to_s.downcase %>">
+          <div class="flex items-center gap-3">
+            <div class="selector-thumb">
+              <% if recipe.photo.attached? %>
+                <%= image_tag recipe.photo.variant(resize_to_fill: [64, 64]), class: "w-full h-full object-cover rounded-xl" %>
+              <% else %>
+                <span class="text-2xl">🥘</span>
+              <% end %>
+            </div>
+            <div>
+              <p class="font-semibold text-slate-900 text-sm"><%= recipe.name %></p>
+              <p class="text-xs text-[var(--muted)]">レシピID: <%= recipe.id %></p>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="selector-add"
+            data-action="click->meal-selector#select"
+            data-recipe-id="<%= recipe.id %>">
+            ＋
+          </button>
+        </div>
+      <% end %>
+    </div>
+
+    <form data-meal-selector-target="form" action="<%= meal_plans_path %>" method="post" class="hidden">
+      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+      <input type="hidden" name="meal_plan[plan_date]" data-meal-selector-target="dateInput">
+      <input type="hidden" name="meal_plan[meal_type]" data-meal-selector-target="mealTypeInput">
+      <input type="hidden" name="meal_plan[recipe_id]" data-meal-selector-target="recipeInput">
+      <input type="hidden" name="meal_plan[servings]" data-meal-selector-target="servingsInput">
+    </form>
+  </div>
+</div>
