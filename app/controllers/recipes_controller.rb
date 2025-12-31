@@ -1,5 +1,5 @@
 class RecipesController < ApplicationController
-  before_action :set_recipe, only: %i[show edit update destroy]
+  before_action :set_recipe, only: %i[edit update destroy]
 
   def index
     @query = params[:q].to_s.strip
@@ -12,8 +12,6 @@ class RecipesController < ApplicationController
     end
     @recipes = @recipes.order(:name)
   end
-
-  def show; end
 
   def new
     @recipe = Recipe.new

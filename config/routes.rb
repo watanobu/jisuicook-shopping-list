@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   root "plans#index"
 
-  resources :recipes
+  resources :recipes, except: [:show]
   resources :meal_plans, only: %i[create update destroy]
   get "plans", to: "plans#index"
 
