@@ -1,6 +1,6 @@
 class Recipe < ApplicationRecord
   has_many :ingredients, dependent: :destroy
-  has_many :meal_plans, dependent: :restrict_with_error
+  has_many :meal_plans, dependent: :destroy
   has_one_attached :photo
 
   accepts_nested_attributes_for :ingredients, allow_destroy: true, reject_if: :all_blank

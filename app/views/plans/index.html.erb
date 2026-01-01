@@ -38,7 +38,13 @@
         when "lunch" then "昼食を追加"
         else "夕食を追加"
       end %>
-      <div class="slot-card">
+      <% empty_slot = slot_plans.empty? %>
+      <div class="slot-card <%= 'slot-card--clickable' if empty_slot %>"
+           <% if empty_slot %>
+             data-action="click->meal-selector#open"
+             data-meal-selector-plan-date-value="<%= @selected_date %>"
+             data-meal-selector-meal-type-value="<%= meal_type %>"
+           <% end %>>
         <span class="slot-badge <%= badge_class %>"><%= meal_type.upcase %></span>
 
         <% if slot_plans.any? %>
@@ -60,7 +66,15 @@
                       <%= f.number_field :servings, step: "0.5", min: "0.5", class: "w-20 text-sm text-center rounded-lg border-slate-200 focus:ring-[var(--brand)] focus:border-[var(--brand)]" %>
                       <%= f.submit "更新", class: "btn-tiny bg-[var(--brand)] text-white hover:bg-[var(--brand-dark)] shadow-[0_8px_20px_rgba(255,122,0,0.25)]" %>
                     <% end %>
-                    <%= button_to "削除", meal_plan_path(plan), method: :delete, data: { confirm: "この献立を削除しますか？" }, class: "btn-tiny btn-danger" %>
+                    <%= form_with url: meal_plan_path(plan), method: :delete, class: "inline", local: true do %>
+                      <%= button_tag "削除",
+                        type: "button",
+                        data: {
+                          action: "confirm-modal#ask",
+                          confirm_modal_message_value: "この献立を削除しますか？"
+                        },
+                        class: "btn-tiny btn-danger" %>
+                    <% end %>
                   </div>
                 </div>
               </div>
@@ -77,15 +91,10 @@
             </button>
           </div>
         <% else %>
-          <button
-            type="button"
-            class="slot-empty"
-            data-action="click->meal-selector#open"
-            data-meal-selector-plan-date-value="<%= @selected_date %>"
-            data-meal-selector-meal-type-value="<%= meal_type %>">
+          <div class="slot-empty w-full text-left">
             <div class="slot-empty__icon">＋</div>
             <p class="slot-empty__text"><%= placeholder %></p>
-          </button>
+          </div>
         <% end %>
       </div>
     <% end %>
@@ -103,7 +112,7 @@
       <%= button_tag "クリップボードにコピー",
         type: "button",
         id: "copy-shopping-list",
-        data: { shopping_text: @shopping_list.map { |item| "#{item.name} #{number_with_precision(item.quantity, precision: 2)}#{item.unit}" }.join("\n") },
+        data: { shopping_text: @shopping_list.map { |item| "#{item.name} #{format_quantity(item.quantity)}#{item.unit}" }.join("\n") },
         disabled: @shopping_list.empty?,
         class: "btn-ghost text-indigo-600 border-indigo-100 hover:bg-indigo-50 disabled:opacity-50 disabled:cursor-not-allowed" %>
     </div>
@@ -116,7 +125,7 @@
               <div class="shopping-dot"></div>
               <span class="font-medium text-slate-800"><%= item.name %></span>
             </div>
-            <span class="font-semibold text-indigo-900"><%= number_with_precision(item.quantity, precision: 2) %><span class="text-sm text-slate-500 ml-1"><%= item.unit %></span></span>
+            <span class="font-semibold text-indigo-900"><%= format_quantity(item.quantity) %><span class="text-sm text-slate-500 ml-1"><%= item.unit %></span></span>
           </div>
         <% end %>
       </div>

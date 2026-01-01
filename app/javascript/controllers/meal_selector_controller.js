@@ -59,7 +59,7 @@ export default class extends Controller {
   }
 
   select(event) {
-    const recipeId = event.currentTarget.dataset.recipeId
+    const recipeId = event.currentTarget.dataset.recipeId || event.target.closest("[data-recipe-id]")?.dataset.recipeId
     if (!recipeId) return
     this.recipeInputTarget.value = recipeId
     this.dateInputTarget.value = this.planDateValue

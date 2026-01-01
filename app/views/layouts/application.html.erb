@@ -11,7 +11,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-[var(--surface-2)] min-h-screen">
+  <body class="bg-[var(--surface-2)] min-h-screen" data-controller="confirm-modal">
     <header class="brand-bar">
       <div class="flex items-center space-x-3">
         <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-2xl">🛍️</div>
@@ -50,5 +50,15 @@
         <span class="mt-1">献立・買物</span>
       <% end %>
     </nav>
+
+    <div data-confirm-modal-target="backdrop" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center px-4">
+      <div class="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6 space-y-4">
+        <div class="text-lg font-bold text-slate-900" data-confirm-modal-target="message">本当に削除しますか？</div>
+        <div class="flex gap-3">
+          <button class="flex-1 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50" data-action="confirm-modal#cancel">キャンセル</button>
+          <button class="flex-1 py-2 rounded-xl bg-red-500 text-white font-semibold shadow hover:bg-red-600" data-action="confirm-modal#confirm">削除する</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

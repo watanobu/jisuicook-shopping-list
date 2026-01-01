@@ -11,4 +11,15 @@ module ApplicationHelper
     else meal_type
     end
   end
+
+  def format_quantity(number)
+    return "" if number.nil?
+    # 小数部が 0 のときは整数表示、それ以外は少数2桁まで
+    rounded = number.to_d
+    if rounded.frac.zero?
+      rounded.to_i
+    else
+      number_with_precision(rounded, precision: 2).sub(/\.?0+$/, "")
+    end
+  end
 end

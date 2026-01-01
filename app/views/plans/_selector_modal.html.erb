@@ -28,10 +28,13 @@
 
     <div class="selector-list" data-meal-selector-target="list">
       <% recipes.each do |recipe| %>
-        <div
-          class="selector-item"
+        <button
+          type="button"
+          class="selector-item w-full text-left"
           data-meal-selector-target="listItem"
-          data-name="<%= recipe.name.to_s.downcase %>">
+          data-name="<%= recipe.name.to_s.downcase %>"
+          data-recipe-id="<%= recipe.id %>"
+          data-action="click->meal-selector#select">
           <div class="flex items-center gap-3">
             <div class="selector-thumb">
               <% if recipe.photo.attached? %>
@@ -45,14 +48,8 @@
               <p class="text-xs text-[var(--muted)]">レシピID: <%= recipe.id %></p>
             </div>
           </div>
-          <button
-            type="button"
-            class="selector-add"
-            data-action="click->meal-selector#select"
-            data-recipe-id="<%= recipe.id %>">
-            ＋
-          </button>
-        </div>
+          <div class="selector-add">＋</div>
+        </button>
       <% end %>
     </div>
 

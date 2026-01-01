@@ -56,7 +56,15 @@
         </div>
         <div class="flex items-center justify-end gap-2 pt-1">
           <%= link_to "編集", edit_recipe_path(recipe), class: "px-3 py-1 bg-[var(--brand)] text-white rounded-lg text-xs font-semibold shadow-sm hover:bg-[var(--brand-dark)]" %>
-          <%= button_to "削除", recipe_path(recipe), method: :delete, data: { confirm: "本当に削除しますか？" }, class: "px-3 py-1 border border-red-200 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-50" %>
+          <%= form_with url: recipe_path(recipe), method: :delete, class: "inline", local: true do %>
+            <%= button_tag "削除",
+              type: "button",
+              data: {
+                action: "confirm-modal#ask",
+                confirm_modal_message_value: "このレシピを削除しますか？"
+              },
+              class: "px-3 py-1 border border-red-200 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-50" %>
+          <% end %>
         </div>
       </div>
     <% end %>
