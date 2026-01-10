@@ -20,6 +20,14 @@ docker compose up
 ```
 `web` サービスは `bin/dev` を実行し、RailsサーバーとTailwindビルドを同時起動します。
 
+## 公開URL
+- https://jisuicook-shopping-list-production.up.railway.app/
+
+## Railwayデプロイ（メモ）
+- MySQLサービスを追加し、アプリ側の `DATABASE_URL` は `${{MySQL.MYSQL_URL}}` のみを設定する
+  - 複数URLを連結すると起動エラーになるため注意
+- `RAILS_MASTER_KEY` を設定する
+
 ## 画面と機能
 - レシピ管理
   - レシピ名・写真URL（任意）・材料（食材名/数量/単位/調味料フラグ）を登録/編集
