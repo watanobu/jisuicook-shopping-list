@@ -51,7 +51,6 @@ test:
 #
 production:
   <<: *default
-  url: <%= ENV["DATABASE_URL"]&.sub(/\A(railwaymysql|mysql):/, "mysql2:") %>
   database: <%= ENV.fetch("MYSQL_DATABASE_PRODUCTION", "jisuicook_shopping_list_production") %>
   username: <%= ENV.fetch("MYSQL_USER", "jisuicook_shopping_list") %>
   password: <%= ENV["MYSQL_PASSWORD"] %>
